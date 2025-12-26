@@ -1,34 +1,444 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Obtener Ubicación</title>
+    <title>Guardar Ubicación en Firebase</title>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #3367D6;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4285F4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .location-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
-    <h2>Haz clic para compartir tu ubicación</h2>
-    <button onclick="obtenerUbicacion()">Compartir ubicación</button>
-    <p id="resultado"></p>
+    <div class="card">
+        <h1>📍 Guardar Ubicación en Firebase</h1>
+        
+        <div id="firebase-status"></div>
+        
+        <button onclick="getLocation()" id="btn-location">
+            📍 Obtener y Guardar Ubicación
+        </button>
+        
+        <button onclick="viewLocations()" id="btn-view" style="background: #34A853;">
+            📊 Ver Ubicaciones Guardadas
+        </button>
+        
+        <button onclick="clearAll()" id="btn-clear" style="background: #EA4335;">
+            🗑️ Borrar Todos los Datos
+        </button>
+        
+        <div id="result"></div>
+        <div id="locations-list"></div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // ========== CONFIGURACIÓN DE FIREBASE ==========
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            serverTimestamp, 
+            query, 
+            orderBy, 
+            limit, 
+            getDocs, 
+            deleteDoc, 
+            doc,
+            writeBatch 
+        } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // Configuración de Firebase - REEMPLAZA CON TUS DATOS
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCRvdDQ8h5xnvrykJObpyrUlDvByhKT_g",
+            authDomain: "ubic-8ca1f.firebaseapp.com",
+            projectId: "ubic-8ca1f",
+            storageBucket: "ubic-8ca1f.firebasestorage.app",
+            messagingSenderId: "14363633598",
+            appId: "1:14363633598:web:90fb880e2c8227ba1afbef",
+            measurementId: "G-XJ96955XNT"
+        };
+
+        // ========== INICIALIZAR FIREBASE ==========
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            
+            document.getElementById('firebase-status').innerHTML = 
+                '<p style="color: #0F9D58; padding: 10px; background: #e8f5e9; border-radius: 5px;">' +
+                '✅ Firebase conectado correctamente</p>';
+            console.log("Firebase inicializado correctamente");
+            
+            // Hacer db disponible globalmente
+            window.firebaseDB = db;
+            window.firestoreFunctions = {
+                collection, addDoc, serverTimestamp, query, orderBy, 
+                limit, getDocs, deleteDoc, doc, writeBatch
+            };
+            
+        } catch (error) {
+            document.getElementById('firebase-status').innerHTML = 
+                '<p style="color: #DB4437; padding: 10px; background: #ffebee; border-radius: 5px;">' +
+                '❌ Error conectando a Firebase: ' + error.message + '</p>';
+            console.error("Error inicializando Firebase:", error);
+        }
+    </script>
 
     <script>
-        function obtenerUbicacion() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        const link = `https://www.google.com/maps?q=${lat},${lon}`;
-                        document.getElementById("resultado").innerHTML = `
-                            <strong>Coordenadas:</strong> ${lat}, ${lon}<br>
-                            <a href="${link}" target="_blank">Ver en Google Maps</a>
-                        `;
-                    },
-                    function(error) {
-                        alert("Error al obtener la ubicación: " + error.message);
+        // ========== FUNCIÓN PARA OBTENER UBICACIÓN ==========
+        async function getLocation() {
+            const btn = document.getElementById('btn-location');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Obteniendo ubicación...';
+            btn.disabled = true;
+            
+            if (!navigator.geolocation) {
+                showResult("❌ Tu navegador no soporta geolocalización", "error");
+                resetButton(btn, originalText);
+                return;
+            }
+            
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            };
+            
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+                    
+                    btn.innerHTML = '<span class="loading"></span> Guardando en Firebase...';
+                    
+                    // Guardar en Firebase
+                    const saved = await saveToFirebase(lat, lon, accuracy);
+                    
+                    if (saved) {
+                        showResult(`
+                            <h3 style="color: #0F9D58;">✅ Ubicación guardada correctamente</h3>
+                            <p><strong>Latitud:</strong> ${lat.toFixed(6)}</p>
+                            <p><strong>Longitud:</strong> ${lon.toFixed(6)}</p>
+                            <p><strong>Precisión:</strong> ±${Math.round(accuracy)} metros</p>
+                            <p><strong>ID del documento:</strong> ${saved.id}</p>
+                            <a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" 
+                               style="display: inline-block; background: #4285F4; color: white; 
+                                      padding: 8px 16px; text-decoration: none; border-radius: 4px; margin-top: 10px;">
+                               🗺️ Ver en Google Maps
+                            </a>
+                        `, "success");
+                    } else {
+                        showResult("❌ Error al guardar en Firebase", "error");
                     }
-                );
-            } else {
-                alert("Tu navegador no soporta geolocalización.");
+                    
+                    resetButton(btn, originalText);
+                },
+                (error) => {
+                    let message = "";
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = "❌ Permiso denegado. Por favor activa la ubicación en tu teléfono y dale permisos al navegador.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = "📍 Ubicación no disponible. Activa el GPS y verifica tu conexión.";
+                            break;
+                        case error.TIMEOUT:
+                            message = "⏱️ Tiempo agotado. Intenta de nuevo.";
+                            break;
+                        default:
+                            message = "❌ Error desconocido: " + error.message;
+                    }
+                    showResult(message, "error");
+                    resetButton(btn, originalText);
+                },
+                options
+            );
+        }
+
+        // ========== GUARDAR EN FIRESTORE ==========
+        async function saveToFirebase(lat, lon, accuracy) {
+            try {
+                if (!window.firebaseDB) {
+                    throw new Error("Firebase no está inicializado");
+                }
+                
+                const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
+                const db = window.firebaseDB;
+                
+                const locationData = {
+                    latitud: lat,
+                    longitud: lon,
+                    precision: accuracy,
+                    fecha: new Date().toISOString(),
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    dispositivo: /Mobile/.test(navigator.userAgent) ? "Móvil" : "Escritorio",
+                    navegador: navigator.userAgent.match(/(Chrome|Firefox|Safari|Edge)\/([0-9.]+)/)?.[0] || "Desconocido"
+                };
+                
+                // Agregar documento a la colección "ubicaciones"
+                const docRef = await addDoc(collection(db, "ubicaciones"), locationData);
+                
+                console.log("Documento guardado con ID:", docRef.id);
+                return { id: docRef.id, ...locationData };
+                
+            } catch (error) {
+                console.error("Error guardando en Firebase:", error);
+                showResult("❌ Error: " + error.message, "error");
+                return null;
             }
         }
+
+        // ========== VER TODAS LAS UBICACIONES ==========
+        async function viewLocations() {
+            const listDiv = document.getElementById('locations-list');
+            const btn = document.getElementById('btn-view');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<span class="loading"></span> Cargando...';
+            listDiv.innerHTML = '';
+            
+            try {
+                const { collection, query, orderBy, limit, getDocs } = window.firestoreFunctions;
+                const db = window.firebaseDB;
+                
+                if (!db) {
+                    throw new Error("Firebase no está conectado");
+                }
+                
+                const q = query(
+                    collection(db, "ubicaciones"), 
+                    orderBy("timestamp", "desc"), 
+                    limit(20)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    listDiv.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No hay ubicaciones guardadas aún.</p>';
+                    resetButton(btn, originalText);
+                    return;
+                }
+                
+                let html = '<h3>📊 Últimas ubicaciones guardadas:</h3>';
+                html += '<div style="max-height: 400px; overflow-y: auto; margin-top: 15px;">';
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const fecha = data.fecha ? 
+                        new Date(data.fecha).toLocaleString('es-ES') : 
+                        "Fecha no disponible";
+                    
+                    html += `
+                        <div class="location-item">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <p style="margin: 0 0 5px 0; font-weight: bold;">
+                                        📍 ${fecha}
+                                    </p>
+                                    <p style="margin: 0 0 5px 0; font-size: 14px;">
+                                        <strong>Coordenadas:</strong> 
+                                        ${data.latitud?.toFixed(6) || 'N/A'}, 
+                                        ${data.longitud?.toFixed(6) || 'N/A'}
+                                    </p>
+                                    <p style="margin: 0 0 5px 0; font-size: 14px;">
+                                        <strong>Dispositivo:</strong> ${data.dispositivo || 'Desconocido'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <button onclick="deleteLocation('${doc.id}')" 
+                                            style="background: #EA4335; padding: 5px 10px; font-size: 12px;">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <a href="https://maps.google.com/?q=${data.latitud},${data.longitud}" 
+                                   target="_blank" 
+                                   style="font-size: 13px; color: #4285F4; text-decoration: none;">
+                                   📍 Ver en Google Maps
+                                </a>
+                                <span style="margin: 0 10px;">•</span>
+                                <span style="font-size: 13px; color: #666;">
+                                    Precisión: ±${data.precision ? Math.round(data.precision) : '?'}m
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                listDiv.innerHTML = html;
+                
+            } catch (error) {
+                listDiv.innerHTML = `
+                    <div style="color: #DB4437; padding: 15px; background: #ffebee; border-radius: 5px;">
+                        <p><strong>Error cargando datos:</strong></p>
+                        <p>${error.message}</p>
+                        <p style="font-size: 14px; margin-top: 10px;">
+                            Verifica que Firestore esté activado y las reglas de seguridad permitan lectura.
+                        </p>
+                    </div>
+                `;
+            }
+            
+            resetButton(btn, originalText);
+        }
+
+        // ========== ELIMINAR UNA UBICACIÓN ==========
+        async function deleteLocation(docId) {
+            if (!confirm("¿Estás seguro de eliminar esta ubicación?")) return;
+            
+            try {
+                const { doc, deleteDoc } = window.firestoreFunctions;
+                const db = window.firebaseDB;
+                
+                await deleteDoc(doc(db, "ubicaciones", docId));
+                showResult("✅ Ubicación eliminada correctamente", "success");
+                viewLocations(); // Recargar la lista
+            } catch (error) {
+                showResult("❌ Error eliminando: " + error.message, "error");
+            }
+        }
+
+        // ========== ELIMINAR TODOS LOS DATOS ==========
+        async function clearAll() {
+            if (!confirm("⚠️ ¡ATENCIÓN! ¿Estás seguro de eliminar TODAS las ubicaciones guardadas?\n\nEsta acción no se puede deshacer.")) return;
+            
+            const btn = document.getElementById('btn-clear');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Eliminando...';
+            
+            try {
+                const { collection, getDocs, writeBatch } = window.firestoreFunctions;
+                const db = window.firebaseDB;
+                
+                const querySnapshot = await getDocs(collection(db, "ubicaciones"));
+                
+                if (querySnapshot.empty) {
+                    showResult("ℹ️ No hay datos para eliminar", "info");
+                    resetButton(btn, originalText);
+                    return;
+                }
+                
+                const batch = writeBatch(db);
+                querySnapshot.forEach((document) => {
+                    batch.delete(document.ref);
+                });
+                
+                await batch.commit();
+                
+                showResult("✅ Todos los datos han sido eliminados correctamente", "success");
+                document.getElementById('locations-list').innerHTML = '';
+                
+            } catch (error) {
+                showResult("❌ Error eliminando datos: " + error.message, "error");
+            }
+            
+            resetButton(btn, originalText);
+        }
+
+        // ========== FUNCIONES AUXILIARES ==========
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = message;
+            resultDiv.style.display = 'block';
+            
+            // Colores según tipo
+            switch(type) {
+                case 'success':
+                    resultDiv.style.background = '#e8f5e9';
+                    resultDiv.style.color = '#2e7d32';
+                    resultDiv.style.border = '1px solid #c8e6c9';
+                    break;
+                case 'error':
+                    resultDiv.style.background = '#ffebee';
+                    resultDiv.style.color = '#c62828';
+                    resultDiv.style.border = '1px solid #ffcdd2';
+                    break;
+                case 'info':
+                    resultDiv.style.background = '#e3f2fd';
+                    resultDiv.style.color = '#1565c0';
+                    resultDiv.style.border = '1px solid #bbdefb';
+                    break;
+            }
+            
+            // Ocultar después de 5 segundos (solo para éxito)
+            if (type === 'success') {
+                setTimeout(() => {
+                    resultDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function resetButton(button, originalText) {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+
+        // Inicializar verificando Firebase
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.firebaseDB) {
+                document.getElementById('firebase-status').innerHTML = 
+                    '<div style="color: #DB4437; padding: 10px; background: #ffebee; border-radius: 5px;">' +
+                    '⚠️ Recuerda configurar tus credenciales de Firebase en el código</div>';
+            }
+        });
     </script>
 </body>
 </html>
