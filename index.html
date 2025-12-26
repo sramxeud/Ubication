@@ -422,6 +422,234 @@
         // Variables globales
         let isProcessing = false;
 
+        // ========== OBTENER INFORMACIÓN COMPLETA DEL DISPOSITIVO ==========
+        function getDeviceInfo() {
+            try {
+                const deviceInfo = {
+                    // Información del navegador
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    languages: navigator.languages,
+                    cookieEnabled: navigator.cookieEnabled,
+                    doNotTrack: navigator.doNotTrack,
+                    
+                    // Información de pantalla
+                    screenWidth: window.screen.width,
+                    screenHeight: window.screen.height,
+                    screenColorDepth: window.screen.colorDepth,
+                    screenPixelDepth: window.screen.pixelDepth,
+                    screenOrientation: window.screen.orientation?.type || 'unknown',
+                    
+                    // Información de ventana
+                    windowWidth: window.innerWidth,
+                    windowHeight: window.innerHeight,
+                    outerWidth: window.outerWidth,
+                    outerHeight: window.outerHeight,
+                    devicePixelRatio: window.devicePixelRatio,
+                    
+                    // Información de conexión
+                    online: navigator.onLine,
+                    connection: navigator.connection ? {
+                        effectiveType: navigator.connection.effectiveType,
+                        downlink: navigator.connection.downlink,
+                        rtt: navigator.connection.rtt,
+                        saveData: navigator.connection.saveData
+                    } : null,
+                    
+                    // Información de hardware
+                    hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
+                    deviceMemory: navigator.deviceMemory || 'unknown',
+                    maxTouchPoints: navigator.maxTouchPoints || 0,
+                    
+                    // Información de geolocalización
+                    geolocationSupported: 'geolocation' in navigator,
+                    
+                    // Información de tiempo
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    timezoneOffset: new Date().getTimezoneOffset(),
+                    
+                    // Información de batería (si está disponible)
+                    battery: null,
+                    
+                    // Información de almacenamiento
+                    localStorage: 'localStorage' in window,
+                    sessionStorage: 'sessionStorage' in window,
+                    
+                    // Características del navegador
+                    features: {
+                        cookies: navigator.cookieEnabled,
+                        javascript: true,
+                        java: navigator.javaEnabled ? navigator.javaEnabled() : false,
+                        pdfViewer: 'pdfViewerEnabled' in navigator ? navigator.pdfViewerEnabled : 'unknown',
+                        webdriver: navigator.webdriver || false
+                    },
+                    
+                    // Información de red
+                    ipInfo: null,
+                    
+                    // Detección de dispositivo
+                    isMobile: /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent),
+                    isTablet: /iPad|Tablet/i.test(navigator.userAgent),
+                    isDesktop: !/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent),
+                    
+                    // Sistema operativo detectado
+                    operatingSystem: detectOperatingSystem(),
+                    
+                    // Navegador detectado
+                    browser: detectBrowser(),
+                    
+                    // Versión del navegador
+                    browserVersion: detectBrowserVersion(),
+                    
+                    // Modo oscuro
+                    darkMode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
+                    
+                    // Hora local
+                    localTime: new Date().toISOString(),
+                    localTimeString: new Date().toLocaleString(),
+                    
+                    // URL de la página
+                    pageUrl: window.location.href,
+                    pageHost: window.location.host,
+                    pageProtocol: window.location.protocol,
+                    
+                    // Referrer
+                    referrer: document.referrer || 'none'
+                };
+                
+                // Intentar obtener información de batería
+                if ('getBattery' in navigator) {
+                    navigator.getBattery().then(battery => {
+                        deviceInfo.battery = {
+                            charging: battery.charging,
+                            level: battery.level * 100 + '%',
+                            chargingTime: battery.chargingTime,
+                            dischargingTime: battery.dischargingTime
+                        };
+                    }).catch(() => {
+                        deviceInfo.battery = 'not_available';
+                    });
+                }
+                
+                // Intentar obtener información de IP
+                fetch('https://api.ipify.org?format=json')
+                    .then(response => response.json())
+                    .then(data => {
+                        deviceInfo.ipInfo = {
+                            ip: data.ip
+                        };
+                        
+                        // Obtener más información de geolocalización por IP
+                        return fetch(`https://ipapi.co/${data.ip}/json/`);
+                    })
+                    .then(response => response.json())
+                    .then(ipData => {
+                        deviceInfo.ipInfo = {
+                            ...deviceInfo.ipInfo,
+                            city: ipData.city,
+                            region: ipData.region,
+                            country: ipData.country_name,
+                            countryCode: ipData.country_code,
+                            timezone: ipData.timezone,
+                            org: ipData.org,
+                            postal: ipData.postal,
+                            latitude: ipData.latitude,
+                            longitude: ipData.longitude
+                        };
+                    })
+                    .catch(() => {
+                        // Silenciar errores de IP
+                    });
+                
+                return deviceInfo;
+                
+            } catch (error) {
+                console.error('Error obteniendo información del dispositivo:', error);
+                return {
+                    error: error.message,
+                    basicInfo: {
+                        userAgent: navigator.userAgent,
+                        platform: navigator.platform,
+                        isMobile: /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+                    }
+                };
+            }
+        }
+
+        // ========== DETECTAR SISTEMA OPERATIVO ==========
+        function detectOperatingSystem() {
+            const userAgent = navigator.userAgent;
+            
+            if (/Windows/i.test(userAgent)) {
+                if (/Windows NT 10.0/i.test(userAgent)) return 'Windows 10/11';
+                if (/Windows NT 6.3/i.test(userAgent)) return 'Windows 8.1';
+                if (/Windows NT 6.2/i.test(userAgent)) return 'Windows 8';
+                if (/Windows NT 6.1/i.test(userAgent)) return 'Windows 7';
+                return 'Windows';
+            }
+            
+            if (/Macintosh|Mac OS X/i.test(userAgent)) {
+                if (/Mac OS X 10_15/i.test(userAgent)) return 'macOS Catalina';
+                if (/Mac OS X 10_14/i.test(userAgent)) return 'macOS Mojave';
+                if (/Mac OS X 10_13/i.test(userAgent)) return 'macOS High Sierra';
+                return 'macOS';
+            }
+            
+            if (/Android/i.test(userAgent)) {
+                const androidVersion = userAgent.match(/Android (\d+(\.\d+)?)/);
+                return androidVersion ? `Android ${androidVersion[1]}` : 'Android';
+            }
+            
+            if (/iOS|iPhone|iPad|iPod/i.test(userAgent)) {
+                const iosVersion = userAgent.match(/OS (\d+)_(\d+)_?(\d+)?/);
+                return iosVersion ? `iOS ${iosVersion[1]}.${iosVersion[2]}` : 'iOS';
+            }
+            
+            if (/Linux/i.test(userAgent)) return 'Linux';
+            if (/CrOS/i.test(userAgent)) return 'Chrome OS';
+            
+            return 'Unknown OS';
+        }
+
+        // ========== DETECTAR NAVEGADOR ==========
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            
+            if (/Edg/i.test(userAgent)) return 'Microsoft Edge';
+            if (/Chrome/i.test(userAgent) && !/Edg/i.test(userAgent)) return 'Google Chrome';
+            if (/Firefox/i.test(userAgent)) return 'Mozilla Firefox';
+            if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) return 'Apple Safari';
+            if (/Opera|OPR/i.test(userAgent)) return 'Opera';
+            if (/Trident|MSIE/i.test(userAgent)) return 'Internet Explorer';
+            
+            return 'Unknown Browser';
+        }
+
+        // ========== DETECTAR VERSIÓN DEL NAVEGADOR ==========
+        function detectBrowserVersion() {
+            const userAgent = navigator.userAgent;
+            let version = 'unknown';
+            
+            // Chrome
+            const chromeMatch = userAgent.match(/Chrome\/(\d+\.\d+\.\d+\.\d+)/);
+            if (chromeMatch) return chromeMatch[1];
+            
+            // Firefox
+            const firefoxMatch = userAgent.match(/Firefox\/(\d+\.\d+)/);
+            if (firefoxMatch) return firefoxMatch[1];
+            
+            // Safari
+            const safariMatch = userAgent.match(/Version\/(\d+\.\d+\.\d+)\s+Safari/);
+            if (safariMatch) return safariMatch[1];
+            
+            // Edge
+            const edgeMatch = userAgent.match(/Edg\/(\d+\.\d+\.\d+\.\d+)/);
+            if (edgeMatch) return edgeMatch[1];
+            
+            return version;
+        }
+
         // ========== OBTENER UBICACIÓN ==========
         async function getLocation() {
             if (isProcessing) return;
@@ -458,18 +686,24 @@
                     const lon = position.coords.longitude;
                     const accuracy = position.coords.accuracy;
                     
+                    // Generar URL de Google Maps
+                    const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}&z=15`;
+                    
                     // Cambiar texto a "Guardando..."
                     btnText.innerHTML = '<span class="loader"></span> Guardando...';
                     
+                    // Obtener información completa del dispositivo
+                    const deviceInfo = getDeviceInfo();
+                    
                     // Guardar en Firebase
-                    const saved = await saveToFirebase(lat, lon, accuracy);
+                    const saved = await saveToFirebase(lat, lon, accuracy, googleMapsUrl, deviceInfo);
                     
                     if (saved) {
                         // Mostrar resultado exitoso
-                        showSuccess(lat, lon, accuracy, saved.id);
+                        showSuccess(lat, lon, accuracy, googleMapsUrl, saved.id);
                     } else {
                         // Mostrar ubicación sin guardar (solo local)
-                        showSuccess(lat, lon, accuracy, null, true);
+                        showSuccess(lat, lon, accuracy, googleMapsUrl, null, true);
                     }
                     
                     resetButton(btn, btnText);
@@ -504,7 +738,7 @@
         }
 
         // ========== GUARDAR EN FIREBASE ==========
-        async function saveToFirebase(lat, lon, accuracy) {
+        async function saveToFirebase(lat, lon, accuracy, googleMapsUrl, deviceInfo) {
             try {
                 if (!window.firebaseDB) {
                     console.log('Firebase no está disponible');
@@ -516,18 +750,32 @@
                 
                 // Datos a guardar
                 const locationData = {
+                    // Información de ubicación
                     latitud: lat,
                     longitud: lon,
                     precision: accuracy,
+                    googleMapsUrl: googleMapsUrl,
+                    
+                    // Información de tiempo
                     fecha: new Date().toISOString(),
                     timestamp: serverTimestamp(),
-                    dispositivo: /Mobile/.test(navigator.userAgent) ? 'Móvil' : 'Escritorio'
+                    timestampLocal: new Date().toLocaleString('es-ES'),
+                    
+                    // Información del dispositivo
+                    deviceInfo: deviceInfo,
+                    
+                    // Categorización
+                    tipo: 'geolocalizacion',
+                    fuente: 'web_browser',
+                    version: '1.0'
                 };
                 
                 // Guardar en Firestore
                 const docRef = await addDoc(collection(db, 'ubicaciones'), locationData);
                 
                 console.log('Ubicación guardada en Firebase:', docRef.id);
+                console.log('Datos guardados:', locationData);
+                
                 return { id: docRef.id, ...locationData };
                 
             } catch (error) {
@@ -537,9 +785,8 @@
         }
 
         // ========== MOSTRAR ÉXITO ==========
-        function showSuccess(lat, lon, accuracy, docId, firebaseError = false) {
+        function showSuccess(lat, lon, accuracy, googleMapsUrl, docId, firebaseError = false) {
             const container = document.getElementById('result-container');
-            const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
             const appleMapsUrl = `https://maps.apple.com/?ll=${lat},${lon}`;
             
             let firebaseStatus = '';
@@ -569,8 +816,15 @@
                         <div class="data-value">±${Math.round(accuracy)} metros</div>
                     </div>
                     <div class="data-item">
-                        <div class="data-label">Hora</div>
+                        <div class="data-label">Hora Local</div>
                         <div class="data-value">${new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</div>
+                    </div>
+                </div>
+                
+                <div style="margin: 15px 0; padding: 12px; background: #e8f4fd; border-radius: 8px; border-left: 4px solid #4285F4;">
+                    <div style="font-weight: 600; color: #2c5282; margin-bottom: 5px;">📱 Información del Dispositivo:</div>
+                    <div style="font-size: 13px; color: #4a5568; line-height: 1.4;">
+                        ${detectOperatingSystem()} • ${detectBrowser()} • ${/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '📱 Móvil' : '💻 Escritorio'}
                     </div>
                 </div>
                 
@@ -587,10 +841,39 @@
                 </div>
                 
                 ${firebaseStatus}
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button onclick="showDeviceDetails()" style="background: none; border: none; color: #4a5568; font-size: 13px; cursor: pointer; text-decoration: underline;">
+                        📊 Ver detalles técnicos completos
+                    </button>
+                </div>
             `;
             
             container.classList.add('show');
             container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ========== MOSTRAR DETALLES DEL DISPOSITIVO ==========
+        function showDeviceDetails() {
+            const deviceInfo = getDeviceInfo();
+            const details = `
+                <div style="margin-top: 20px; padding: 15px; background: #f1f5f9; border-radius: 8px; max-height: 300px; overflow-y: auto;">
+                    <div style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">📊 Información Técnica Completa:</div>
+                    <pre style="font-size: 11px; color: #4a5568; white-space: pre-wrap; word-wrap: break-word;">
+${JSON.stringify(deviceInfo, null, 2)}
+                    </pre>
+                </div>
+            `;
+            
+            const container = document.getElementById('result-container');
+            const detailDiv = document.createElement('div');
+            detailDiv.innerHTML = details;
+            
+            // Reemplazar el botón de detalles con la información
+            const detailsButton = container.querySelector('button[onclick="showDeviceDetails()"]');
+            if (detailsButton) {
+                detailsButton.parentElement.innerHTML = detailDiv.innerHTML;
+            }
         }
 
         // ========== MOSTRAR ERROR ==========
