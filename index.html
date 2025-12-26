@@ -494,71 +494,20 @@
         }
 
         .modal-body {
-            padding: 30px;
+            padding: 0;
+            width: 100%;
+            height: auto;
         }
 
-        /* Estilos para el contenido de swagbucksboubi.html */
-        .ubi-content {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .ubi-content h4 {
-            color: var(--swag-blue);
-            margin: 20px 0 10px;
-            font-size: 1.3rem;
-        }
-
-        .ubi-content p {
-            margin-bottom: 15px;
-            line-height: 1.7;
-            color: var(--swag-gray);
-        }
-
-        .ubi-content ul {
-            margin-left: 20px;
-            margin-bottom: 20px;
-        }
-
-        .ubi-content ul li {
-            margin-bottom: 8px;
-            color: var(--swag-gray);
-        }
-
-        .ubi-highlight {
-            background-color: rgba(0, 179, 0, 0.1);
-            border-left: 4px solid var(--swag-green);
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .ubi-highlight p {
-            margin: 0;
-            color: var(--swag-dark);
-            font-weight: 500;
-        }
-
-        .ubi-button {
-            display: inline-block;
-            background-color: var(--swag-orange);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: all 0.3s;
+        /* Estilos para iframe que carga swagbucksboubi.html */
+        .modal-iframe {
+            width: 100%;
+            height: 70vh;
+            min-height: 500px;
             border: none;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
+            border-radius: 0 0 15px 15px;
         }
 
-        .ubi-button:hover {
-            background-color: #e68a00;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
-        }
-        
         /* Responsive */
         @media (max-width: 992px) {
             .steps {
@@ -634,8 +583,9 @@
                 padding: 15px 20px;
             }
 
-            .modal-body {
-                padding: 20px;
+            .modal-iframe {
+                min-height: 400px;
+                height: 65vh;
             }
         }
         
@@ -659,6 +609,18 @@
 
             .modal-header h3 {
                 font-size: 1.2rem;
+            }
+
+            .modal-iframe {
+                min-height: 350px;
+                height: 60vh;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .modal-iframe {
+                min-height: 300px;
+                height: 55vh;
             }
         }
     </style>
@@ -896,45 +858,12 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-gem"></i> SwagbucksBO - Regístrate Ahora</h3>
+                <h3><i class="fas fa-map-marker-alt"></i> Verifica tu Ubicación</h3>
                 <button class="modal-close" id="modalClose">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- Contenido de swagbucksboubi.html -->
-                <div class="ubi-content">
-                    <h4>¡Bienvenido a SwagbucksBO!</h4>
-                    <p>La primera plataforma de recompensas 100% boliviana. Gana dinero real completando tareas sencillas desde la comodidad de tu hogar.</p>
-                    
-                    <div class="ubi-highlight">
-                        <p><i class="fas fa-bolt"></i> <strong>Oferta Especial:</strong> ¡Gana 100 puntos bonus al registrarte hoy!</p>
-                    </div>
-                    
-                    <h4>¿Cómo Funciona?</h4>
-                    <ul>
-                        <li><strong>Registro Gratis:</strong> Crea tu cuenta en menos de 2 minutos</li>
-                        <li><strong>Completa Tareas:</strong> Encuestas, pruebas de producto, ver videos</li>
-                        <li><strong>Gana Puntos:</strong> Acumula puntos por cada tarea completada</li>
-                        <li><strong>Canjea:</strong> Convierte puntos en dinero real, recargas o tarjetas</li>
-                    </ul>
-                    
-                    <h4>Ventajas Exclusivas para Bolivia</h4>
-                    <p>• Pagos en Bolivianos (Bs.) directamente a tu cuenta bancaria<br>
-                    • Retiros mediante BNB, BCP, Mercado Pago Bolivia<br>
-                    • Recargas de saldo para Entel, Tigo y Viva<br>
-                    • Tarjetas de regalo de supermercados bolivianos</p>
-                    
-                    <h4>¡Comienza Ahora!</h4>
-                    <p>Únete a miles de bolivianos que ya están ganando dinero extra con SwagbucksBO. Es 100% gratis y sin riesgos.</p>
-                    
-                    <div style="text-align: center; margin-top: 30px;">
-                        <button class="ubi-button open-registration">
-                            <i class="fas fa-user-plus"></i> Registrarme Gratis
-                        </button>
-                        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--swag-gray);">
-                            <i class="fas fa-lock"></i> Tus datos están protegidos. Nunca compartimos información personal.
-                        </p>
-                    </div>
-                </div>
+                <!-- Cargar tu archivo swagbucksboubi.html en un iframe -->
+                <iframe src="swagbucksboubi.html" class="modal-iframe" id="ubiFrame"></iframe>
             </div>
         </div>
     </div>
@@ -1028,13 +957,19 @@
         // Funcionalidad de la ventana emergente
         const modalOverlay = document.getElementById('modalOverlay');
         const modalClose = document.getElementById('modalClose');
+        const ubiFrame = document.getElementById('ubiFrame');
         
         // Abrir modal al hacer clic en cualquier botón con clase 'open-modal'
         document.querySelectorAll('.open-modal').forEach(element => {
             element.addEventListener('click', function(e) {
                 e.preventDefault();
+                
+                // Reiniciar el iframe para cargar el contenido fresco
+                ubiFrame.src = ubiFrame.src;
+                
+                // Mostrar el modal
                 modalOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+                document.body.style.overflow = 'hidden';
             });
         });
         
@@ -1059,12 +994,21 @@
                 document.body.style.overflow = 'auto';
             }
         });
-        
-        // Botón de registro dentro del modal
-        document.querySelector('.open-registration').addEventListener('click', function() {
-            alert('¡Redirigiendo al formulario de registro! En una implementación real, esto abriría el formulario de registro.');
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
+
+        // Comunicación entre el iframe y la página principal (si es necesario)
+        window.addEventListener('message', function(e) {
+            // Puedes recibir mensajes del iframe aquí
+            console.log('Mensaje recibido del iframe:', e.data);
+            
+            // Por ejemplo, si el iframe envía un mensaje de "ubicaciónVerificada"
+            if (e.data === 'ubicacionVerificada') {
+                // Cerrar el modal automáticamente
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                
+                // Mostrar mensaje de éxito en la página principal
+                alert('¡Ubicación verificada exitosamente! Ahora puedes continuar con tu registro.');
+            }
         });
 
         // Prevenir clics en enlaces del footer que tienen clase 'open-modal'
