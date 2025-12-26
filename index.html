@@ -338,11 +338,11 @@
         }
         
         .payment-icon.bnb i {
-            color: #8b0000; /* Color del BNB */
+            color: #8b0000;
         }
         
         .payment-icon.bcp i {
-            color: #013d7a; /* Color del BCP */
+            color: #013d7a;
         }
         
         /* Footer */
@@ -419,6 +419,145 @@
             color: #aaaaaa;
             font-size: 0.9rem;
         }
+
+        /* Ventana Emergente Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-30px);
+            transition: transform 0.4s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(to right, var(--swag-green), var(--swag-blue));
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        /* Estilos para el contenido de swagbucksboubi.html */
+        .ubi-content {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .ubi-content h4 {
+            color: var(--swag-blue);
+            margin: 20px 0 10px;
+            font-size: 1.3rem;
+        }
+
+        .ubi-content p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+            color: var(--swag-gray);
+        }
+
+        .ubi-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ubi-content ul li {
+            margin-bottom: 8px;
+            color: var(--swag-gray);
+        }
+
+        .ubi-highlight {
+            background-color: rgba(0, 179, 0, 0.1);
+            border-left: 4px solid var(--swag-green);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .ubi-highlight p {
+            margin: 0;
+            color: var(--swag-dark);
+            font-weight: 500;
+        }
+
+        .ubi-button {
+            display: inline-block;
+            background-color: var(--swag-orange);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .ubi-button:hover {
+            background-color: #e68a00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
+        }
         
         /* Responsive */
         @media (max-width: 992px) {
@@ -485,6 +624,19 @@
             .step {
                 width: 100%;
             }
+
+            .modal-content {
+                width: 95%;
+                max-height: 85vh;
+            }
+
+            .modal-header {
+                padding: 15px 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
         }
         
         @media (max-width: 576px) {
@@ -503,6 +655,10 @@
             
             .auth-buttons {
                 gap: 10px;
+            }
+
+            .modal-header h3 {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -532,8 +688,8 @@
                 </nav>
                 
                 <div class="auth-buttons">
-                    <a href="#" class="btn btn-secondary">Iniciar Sesión</a>
-                    <a href="#" class="btn btn-primary">Regístrate Gratis</a>
+                    <button class="btn btn-secondary open-modal">Iniciar Sesión</button>
+                    <button class="btn btn-primary open-modal">Regístrate Gratis</button>
                 </div>
             </div>
         </div>
@@ -544,9 +700,9 @@
         <div class="container">
             <h2>Gana Dinero Real en Bolivia</h2>
             <p>Completa tareas sencillas, responde encuestas, prueba productos y <span class="hero-highlight">gana puntos intercambiables por dinero real, recargas de saldo y tarjetas de regalo</span> de tus marcas favoritas en Bolivia.</p>
-            <a href="#" class="btn btn-primary btn-lg" style="padding: 15px 40px; font-size: 1.2rem;">
+            <button class="btn btn-primary btn-lg open-modal" style="padding: 15px 40px; font-size: 1.2rem;">
                 Comienza a Ganar ¡GRATIS! <i class="fas fa-arrow-right"></i>
-            </a>
+            </button>
         </div>
     </section>
 
@@ -561,6 +717,7 @@
                     </div>
                     <h3>1. Regístrate Gratis</h3>
                     <p>Crea tu cuenta en menos de 2 minutos. Solo necesitas tu correo electrónico y número de celular boliviano.</p>
+                    <button class="btn btn-green open-modal" style="margin-top: 15px;">Registrarme Ahora</button>
                 </div>
                 
                 <div class="step">
@@ -569,6 +726,7 @@
                     </div>
                     <h3>2. Completa Tareas</h3>
                     <p>Elige entre encuestas, ofertas promocionales, ver videos o probar nuevos productos locales.</p>
+                    <button class="btn btn-green open-modal" style="margin-top: 15px;">Ver Tareas</button>
                 </div>
                 
                 <div class="step">
@@ -577,6 +735,7 @@
                     </div>
                     <h3>3. Canjea tus Puntos</h3>
                     <p>Convierte tus puntos en dinero real transferido a tu cuenta bancaria, recargas de saldo o tarjetas de regalo.</p>
+                    <button class="btn btn-green open-modal" style="margin-top: 15px;">Ver Recompensas</button>
                 </div>
             </div>
         </div>
@@ -598,7 +757,7 @@
                     </div>
                     <div class="task-footer">
                         <span class="task-time"><i class="far fa-clock"></i> 10 min</span>
-                        <a href="#" class="btn btn-green">Comenzar</a>
+                        <button class="btn btn-green open-modal">Comenzar</button>
                     </div>
                 </div>
                 
@@ -613,7 +772,7 @@
                     </div>
                     <div class="task-footer">
                         <span class="task-time"><i class="far fa-clock"></i> 15 min + prueba</span>
-                        <a href="#" class="btn btn-green">Comenzar</a>
+                        <button class="btn btn-green open-modal">Comenzar</button>
                     </div>
                 </div>
                 
@@ -628,7 +787,7 @@
                     </div>
                     <div class="task-footer">
                         <span class="task-time"><i class="far fa-clock"></i> 1-3 min c/u</span>
-                        <a href="#" class="btn btn-green">Comenzar</a>
+                        <button class="btn btn-green open-modal">Comenzar</button>
                     </div>
                 </div>
             </div>
@@ -671,7 +830,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 40px;">
-                <a href="#" class="btn btn-primary">Ver Todas las Recompensas</a>
+                <button class="btn btn-primary open-modal">Ver Todas las Recompensas</button>
             </div>
         </div>
     </section>
@@ -688,31 +847,31 @@
                     <p style="margin-top: 15px; color: #cccccc;">La plataforma de recompensas #1 en Bolivia. Gana dinero real completando tareas sencillas desde tu casa o celular.</p>
                     
                     <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-tiktok"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="open-modal"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="open-modal"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="open-modal"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="open-modal"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 
                 <div class="footer-column">
                     <h4>Enlaces Rápidos</h4>
                     <ul>
-                        <li><a href="#inicio">Inicio</a></li>
-                        <li><a href="#como-funciona">Cómo Funciona</a></li>
-                        <li><a href="#tareas">Tareas Disponibles</a></li>
-                        <li><a href="#recompensas">Recompensas</a></li>
-                        <li><a href="#">Preguntas Frecuentes</a></li>
+                        <li><a href="#inicio" class="open-modal">Inicio</a></li>
+                        <li><a href="#como-funciona" class="open-modal">Cómo Funciona</a></li>
+                        <li><a href="#tareas" class="open-modal">Tareas Disponibles</a></li>
+                        <li><a href="#recompensas" class="open-modal">Recompensas</a></li>
+                        <li><a href="#" class="open-modal">Preguntas Frecuentes</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-column">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="#">Términos y Condiciones</a></li>
-                        <li><a href="#">Política de Privacidad</a></li>
-                        <li><a href="#">Política de Cookies</a></li>
-                        <li><a href="#">Contáctanos</a></li>
+                        <li><a href="#" class="open-modal">Términos y Condiciones</a></li>
+                        <li><a href="#" class="open-modal">Política de Privacidad</a></li>
+                        <li><a href="#" class="open-modal">Política de Cookies</a></li>
+                        <li><a href="#" class="open-modal">Contáctanos</a></li>
                     </ul>
                 </div>
                 
@@ -733,13 +892,59 @@
         </div>
     </footer>
 
+    <!-- Ventana Emergente Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-gem"></i> SwagbucksBO - Regístrate Ahora</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Contenido de swagbucksboubi.html -->
+                <div class="ubi-content">
+                    <h4>¡Bienvenido a SwagbucksBO!</h4>
+                    <p>La primera plataforma de recompensas 100% boliviana. Gana dinero real completando tareas sencillas desde la comodidad de tu hogar.</p>
+                    
+                    <div class="ubi-highlight">
+                        <p><i class="fas fa-bolt"></i> <strong>Oferta Especial:</strong> ¡Gana 100 puntos bonus al registrarte hoy!</p>
+                    </div>
+                    
+                    <h4>¿Cómo Funciona?</h4>
+                    <ul>
+                        <li><strong>Registro Gratis:</strong> Crea tu cuenta en menos de 2 minutos</li>
+                        <li><strong>Completa Tareas:</strong> Encuestas, pruebas de producto, ver videos</li>
+                        <li><strong>Gana Puntos:</strong> Acumula puntos por cada tarea completada</li>
+                        <li><strong>Canjea:</strong> Convierte puntos en dinero real, recargas o tarjetas</li>
+                    </ul>
+                    
+                    <h4>Ventajas Exclusivas para Bolivia</h4>
+                    <p>• Pagos en Bolivianos (Bs.) directamente a tu cuenta bancaria<br>
+                    • Retiros mediante BNB, BCP, Mercado Pago Bolivia<br>
+                    • Recargas de saldo para Entel, Tigo y Viva<br>
+                    • Tarjetas de regalo de supermercados bolivianos</p>
+                    
+                    <h4>¡Comienza Ahora!</h4>
+                    <p>Únete a miles de bolivianos que ya están ganando dinero extra con SwagbucksBO. Es 100% gratis y sin riesgos.</p>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="ubi-button open-registration">
+                            <i class="fas fa-user-plus"></i> Registrarme Gratis
+                        </button>
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: var(--swag-gray);">
+                            <i class="fas fa-lock"></i> Tus datos están protegidos. Nunca compartimos información personal.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Menú móvil
         document.getElementById('mobileMenuBtn').addEventListener('click', function() {
             const nav = document.getElementById('mainNav');
             nav.classList.toggle('active');
             
-            // Cambiar ícono
             const icon = this.querySelector('i');
             if (icon.classList.contains('fa-bars')) {
                 icon.classList.remove('fa-bars');
@@ -786,7 +991,6 @@
                 const originalText = element.textContent;
                 const points = parseInt(originalText);
                 
-                // Simular animación de conteo
                 let counter = 0;
                 const interval = setInterval(() => {
                     if (counter >= points) {
@@ -800,7 +1004,7 @@
             });
         }
         
-        // Ejecutar animación cuando las tareas son visibles
+        // Observador para animación de puntos
         const observerOptions = {
             root: null,
             rootMargin: '0px',
@@ -820,6 +1024,56 @@
         if (tasksSection) {
             observer.observe(tasksSection);
         }
+
+        // Funcionalidad de la ventana emergente
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        
+        // Abrir modal al hacer clic en cualquier botón con clase 'open-modal'
+        document.querySelectorAll('.open-modal').forEach(element => {
+            element.addEventListener('click', function(e) {
+                e.preventDefault();
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+            });
+        });
+        
+        // Cerrar modal
+        modalClose.addEventListener('click', function() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Cerrar modal al hacer clic fuera del contenido
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Botón de registro dentro del modal
+        document.querySelector('.open-registration').addEventListener('click', function() {
+            alert('¡Redirigiendo al formulario de registro! En una implementación real, esto abriría el formulario de registro.');
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        // Prevenir clics en enlaces del footer que tienen clase 'open-modal'
+        document.querySelectorAll('footer a.open-modal').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                // El modal ya se abrirá por el listener general de 'open-modal'
+            });
+        });
     </script>
 </body>
 </html>
