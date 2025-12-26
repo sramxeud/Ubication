@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Obtener Ubicación</title>
+</head>
+<body>
+    <h2>Haz clic para compartir tu ubicación</h2>
+    <button onclick="obtenerUbicacion()">Compartir ubicación</button>
+    <p id="resultado"></p>
+
+    <script>
+        function obtenerUbicacion() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const link = `https://www.google.com/maps?q=${lat},${lon}`;
+                        document.getElementById("resultado").innerHTML = `
+                            <strong>Coordenadas:</strong> ${lat}, ${lon}<br>
+                            <a href="${link}" target="_blank">Ver en Google Maps</a>
+                        `;
+                    },
+                    function(error) {
+                        alert("Error al obtener la ubicación: " + error.message);
+                    }
+                );
+            } else {
+                alert("Tu navegador no soporta geolocalización.");
+            }
+        }
+    </script>
+</body>
+</html>
