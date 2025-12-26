@@ -33,21 +33,8 @@
             window.firebaseDB = db;
             window.firestoreFunctions = { collection, addDoc, serverTimestamp };
             
-            document.addEventListener('DOMContentLoaded', () => {
-                const status = document.getElementById('firebase-status');
-                if (status) {
-                    status.innerHTML = '<div class="status-success">✅ Conectado a Firebase</div>';
-                }
-            });
-            
         } catch (error) {
             console.error("Error inicializando Firebase:", error);
-            document.addEventListener('DOMContentLoaded', () => {
-                const status = document.getElementById('firebase-status');
-                if (status) {
-                    status.innerHTML = '<div class="status-error">❌ Error: ' + error.message + '</div>';
-                }
-            });
         }
     </script>
 
@@ -68,57 +55,50 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            line-height: 1.6;
-            color: #333;
         }
 
         /* CONTENEDOR PRINCIPAL */
         .container {
             width: 100%;
             max-width: 500px;
-            margin: 0 auto;
         }
 
         /* TARJETA */
         .card {
             background: white;
             border-radius: 20px;
-            padding: 30px;
+            padding: 40px 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
-            transition: transform 0.3s ease;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* LOGO Y TÍTULO */
+        /* LOGO */
         .logo {
             width: 80px;
             height: 80px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
-            margin: 0 auto 20px;
+            margin: 0 auto 25px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
             color: white;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
+        /* TÍTULOS */
         h1 {
             color: #2d3748;
-            font-size: clamp(24px, 5vw, 32px);
+            font-size: 28px;
             margin-bottom: 10px;
             font-weight: 700;
         }
 
         .subtitle {
             color: #718096;
-            font-size: clamp(14px, 3vw, 16px);
-            margin-bottom: 30px;
+            font-size: 16px;
+            margin-bottom: 40px;
+            line-height: 1.5;
         }
 
         /* BOTÓN PRINCIPAL */
@@ -128,94 +108,87 @@
             border: none;
             padding: 20px 40px;
             border-radius: 50px;
-            font-size: clamp(16px, 4vw, 18px);
+            font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            max-width: 300px;
-            margin: 20px 0;
+            max-width: 280px;
+            margin: 0 auto 30px;
+            display: block;
             transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:hover {
-            transform: scale(1.05);
+            transform: translateY(-3px);
             box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
         }
 
         .btn-primary:active {
-            transform: scale(0.98);
+            transform: translateY(-1px);
         }
 
         .btn-primary:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none;
-        }
-
-        /* ESTADOS */
-        .status-success {
-            background: #d4edda;
-            color: #155724;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 15px 0;
-            font-size: 14px;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status-error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 15px 0;
-            font-size: 14px;
-            border: 1px solid #f5c6cb;
+            transform: none !important;
         }
 
         /* RESULTADO */
-        .result {
-            background: #f7fafc;
+        .result-container {
+            background: #f8fafc;
             border-radius: 15px;
             padding: 25px;
             margin-top: 25px;
-            display: none;
             border: 2px solid #e2e8f0;
             text-align: left;
-            animation: fadeIn 0.5s ease;
+            display: none;
         }
 
-        .result.show {
+        .result-container.show {
             display: block;
+            animation: fadeIn 0.4s ease;
         }
 
-        .result h3 {
-            color: #2d3748;
-            margin-bottom: 15px;
-            font-size: 20px;
+        .result-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .result h3.success {
-            color: #38a169;
+        .result-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
 
-        .result h3.error {
-            color: #e53e3e;
+        .success-icon {
+            background: #d4edda;
+            color: #28a745;
         }
 
+        .error-icon {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .result-title {
+            color: #2d3748;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* GRID DE DATOS */
         .data-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin: 20px 0;
+            margin-bottom: 25px;
         }
 
         .data-item {
@@ -234,29 +207,56 @@
         }
 
         .data-value {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #2d3748;
         }
 
-        /* BOTÓN SECUNDARIO */
-        .btn-secondary {
+        /* BOTONES DE ACCIÓN */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn-action {
+            flex: 1;
+            min-width: 140px;
             background: #4a5568;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 8px;
             font-size: 14px;
             cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             transition: background 0.3s ease;
+            text-decoration: none;
+            text-align: center;
         }
 
-        .btn-secondary:hover {
+        .btn-action:hover {
             background: #2d3748;
+        }
+
+        .btn-action.maps {
+            background: #4285F4;
+        }
+
+        .btn-action.maps:hover {
+            background: #3367d6;
+        }
+
+        .btn-action.copy {
+            background: #34A853;
+        }
+
+        .btn-action.copy:hover {
+            background: #2e8b47;
         }
 
         /* LOADER */
@@ -279,42 +279,18 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* INSTRUCCIONES */
-        .instructions {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: left;
-            font-size: 14px;
-            color: #856404;
-        }
-
-        .instructions h4 {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-
             .card {
-                padding: 25px 20px;
+                padding: 30px 20px;
                 border-radius: 15px;
-                margin: 0;
             }
 
             .logo {
                 width: 70px;
                 height: 70px;
                 font-size: 35px;
+                margin-bottom: 20px;
             }
 
             h1 {
@@ -323,31 +299,46 @@
 
             .subtitle {
                 font-size: 14px;
+                margin-bottom: 30px;
             }
 
             .btn-primary {
-                padding: 18px;
+                padding: 18px 30px;
                 font-size: 16px;
                 max-width: 100%;
+                margin-bottom: 25px;
             }
 
             .data-grid {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 12px;
             }
 
             .data-item {
                 padding: 12px;
             }
 
-            .data-value {
-                font-size: 16px;
+            .result-container {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                min-width: auto;
             }
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
             .card {
-                padding: 20px 15px;
+                padding: 25px 15px;
             }
 
             .logo {
@@ -361,19 +352,12 @@
             }
 
             .btn-primary {
-                padding: 16px;
+                padding: 16px 25px;
                 font-size: 15px;
             }
         }
 
-        /* PANTALLAS GRANDES */
-        @media (min-width: 1200px) {
-            .container {
-                max-width: 450px;
-            }
-        }
-
-        /* DARK MODE SUPPORT */
+        /* DARK MODE */
         @media (prefers-color-scheme: dark) {
             body {
                 background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
@@ -392,8 +376,13 @@
                 color: #a0aec0;
             }
 
-            .data-item {
+            .result-container {
                 background: #4a5568;
+                border-color: #4a5568;
+            }
+
+            .data-item {
+                background: #1a202c;
                 border-color: #4a5568;
             }
 
@@ -403,11 +392,6 @@
 
             .data-value {
                 color: #e2e8f0;
-            }
-
-            .result {
-                background: #4a5568;
-                border-color: #4a5568;
             }
         }
     </style>
@@ -420,25 +404,15 @@
             
             <!-- Título -->
             <h1>Obtener Ubicación</h1>
-            <p class="subtitle">Tu ubicación se guardará automáticamente en la base de datos</p>
-            
-            <!-- Estado de Firebase -->
-            <div id="firebase-status"></div>
-            
-            <!-- Instrucciones (ocultas por defecto) -->
-            <div class="instructions" id="instructions" style="display: none;">
-                <h4>📱 ¿Cómo activar la ubicación?</h4>
-                <p><strong>Android:</strong> Toca "Permitir" cuando Chrome lo pida. Si no aparece, activa GPS en Ajustes → Ubicación.</p>
-                <p><strong>iPhone:</strong> Toca "Permitir" cuando Safari lo pida. Ve a Ajustes → Privacidad → Ubicación → Safari.</p>
-            </div>
+            <p class="subtitle">Toca el botón para obtener y guardar tu ubicación actual</p>
             
             <!-- Botón Principal -->
             <button class="btn-primary" id="btn-location" onclick="getLocation()">
-                <span id="btn-text">📍 Obtener Mi Ubicación</span>
+                <span id="btn-text">📍 Obtener Ubicación</span>
             </button>
             
             <!-- Resultado -->
-            <div class="result" id="result">
+            <div class="result-container" id="result-container">
                 <!-- Se llena dinámicamente -->
             </div>
         </div>
@@ -446,35 +420,34 @@
 
     <script>
         // Variables globales
-        let isGettingLocation = false;
+        let isProcessing = false;
 
         // ========== OBTENER UBICACIÓN ==========
         async function getLocation() {
-            if (isGettingLocation) return;
+            if (isProcessing) return;
             
             const btn = document.getElementById('btn-location');
             const btnText = document.getElementById('btn-text');
-            const originalText = btnText.innerHTML;
             
             // Estado de carga
-            isGettingLocation = true;
+            isProcessing = true;
             btn.disabled = true;
-            btnText.innerHTML = '<span class="loader"></span> Obteniendo ubicación...';
+            btnText.innerHTML = '<span class="loader"></span> Detectando...';
             
-            // Ocultar instrucciones
-            document.getElementById('instructions').style.display = 'none';
+            // Ocultar resultado anterior
+            document.getElementById('result-container').classList.remove('show');
             
             // Verificar soporte
             if (!navigator.geolocation) {
-                showResult('error', 'Tu navegador no soporta geolocalización');
-                resetButton(btn, btnText, originalText);
+                showError('Geolocalización no soportada', 'Tu navegador no permite obtener la ubicación');
+                resetButton(btn, btnText);
                 return;
             }
             
             // Opciones para GPS
             const options = {
                 enableHighAccuracy: true,
-                timeout: 15000, // 15 segundos
+                timeout: 10000,
                 maximumAge: 0
             };
             
@@ -493,48 +466,38 @@
                     
                     if (saved) {
                         // Mostrar resultado exitoso
-                        showResult('success', {
-                            lat: lat,
-                            lon: lon,
-                            accuracy: accuracy,
-                            docId: saved.id
-                        });
-                        
-                        // Mostrar en consola para debug
-                        console.log('Ubicación guardada:', saved.id);
+                        showSuccess(lat, lon, accuracy, saved.id);
                     } else {
-                        showResult('error', 'Error al guardar en la base de datos');
+                        // Mostrar ubicación sin guardar (solo local)
+                        showSuccess(lat, lon, accuracy, null, true);
                     }
                     
-                    resetButton(btn, btnText, originalText);
+                    resetButton(btn, btnText);
                 },
                 (error) => {
+                    let title = 'Error';
                     let message = '';
-                    let showInstructions = false;
                     
                     switch(error.code) {
                         case error.PERMISSION_DENIED:
-                            message = 'Permiso denegado. Por favor, permite el acceso a la ubicación.';
-                            showInstructions = true;
+                            title = 'Permiso requerido';
+                            message = 'Por favor, activa la ubicación en tu dispositivo y permite el acceso en el navegador';
                             break;
                         case error.POSITION_UNAVAILABLE:
-                            message = 'Ubicación no disponible. Activa el GPS y verifica tu conexión.';
-                            showInstructions = true;
+                            title = 'Ubicación no disponible';
+                            message = 'Activa el GPS y verifica tu conexión a internet';
                             break;
                         case error.TIMEOUT:
-                            message = 'Tiempo agotado. Intenta de nuevo.';
+                            title = 'Tiempo agotado';
+                            message = 'La operación tomó demasiado tiempo. Intenta de nuevo';
                             break;
                         default:
-                            message = 'Error: ' + error.message;
+                            title = 'Error';
+                            message = 'No se pudo obtener la ubicación';
                     }
                     
-                    showResult('error', message);
-                    
-                    if (showInstructions) {
-                        document.getElementById('instructions').style.display = 'block';
-                    }
-                    
-                    resetButton(btn, btnText, originalText);
+                    showError(title, message);
+                    resetButton(btn, btnText);
                 },
                 options
             );
@@ -544,7 +507,8 @@
         async function saveToFirebase(lat, lon, accuracy) {
             try {
                 if (!window.firebaseDB) {
-                    throw new Error('No hay conexión con Firebase');
+                    console.log('Firebase no está disponible');
+                    return null;
                 }
                 
                 const { collection, addDoc, serverTimestamp } = window.firestoreFunctions;
@@ -557,16 +521,13 @@
                     precision: accuracy,
                     fecha: new Date().toISOString(),
                     timestamp: serverTimestamp(),
-                    userAgent: navigator.userAgent,
-                    dispositivo: /Mobile/.test(navigator.userAgent) ? 'Móvil' : 'Escritorio',
-                    navegador: navigator.userAgent.match(/(Chrome|Firefox|Safari|Edge)\/([0-9.]+)/)?.[0] || 'Desconocido',
-                    resolucion: `${window.screen.width}x${window.screen.height}`,
-                    url: window.location.href
+                    dispositivo: /Mobile/.test(navigator.userAgent) ? 'Móvil' : 'Escritorio'
                 };
                 
                 // Guardar en Firestore
                 const docRef = await addDoc(collection(db, 'ubicaciones'), locationData);
                 
+                console.log('Ubicación guardada en Firebase:', docRef.id);
                 return { id: docRef.id, ...locationData };
                 
             } catch (error) {
@@ -575,144 +536,144 @@
             }
         }
 
-        // ========== MOSTRAR RESULTADO ==========
-        function showResult(type, data) {
-            const resultDiv = document.getElementById('result');
+        // ========== MOSTRAR ÉXITO ==========
+        function showSuccess(lat, lon, accuracy, docId, firebaseError = false) {
+            const container = document.getElementById('result-container');
+            const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+            const appleMapsUrl = `https://maps.apple.com/?ll=${lat},${lon}`;
             
-            if (type === 'success') {
-                const googleMapsUrl = `https://www.google.com/maps?q=${data.lat},${data.lon}`;
-                const appleMapsUrl = `https://maps.apple.com/?ll=${data.lat},${data.lon}`;
-                
-                resultDiv.innerHTML = `
-                    <h3 class="success">✅ Ubicación Guardada</h3>
-                    
-                    <div class="data-grid">
-                        <div class="data-item">
-                            <div class="data-label">Latitud</div>
-                            <div class="data-value">${data.lat.toFixed(6)}</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Longitud</div>
-                            <div class="data-value">${data.lon.toFixed(6)}</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Precisión</div>
-                            <div class="data-value">±${Math.round(data.accuracy)} m</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Hora</div>
-                            <div class="data-value">${new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <a href="${googleMapsUrl}" target="_blank" class="btn-secondary">
-                            <span>🗺️</span> Google Maps
-                        </a>
-                        <a href="${appleMapsUrl}" target="_blank" class="btn-secondary">
-                            <span>🗺️</span> Apple Maps
-                        </a>
-                        <button onclick="copyCoordinates(${data.lat}, ${data.lon})" class="btn-secondary">
-                            <span>📋</span> Copiar
-                        </button>
-                    </div>
-                    
-                    <div style="margin-top: 15px; font-size: 12px; color: #718096; text-align: center;">
-                        ID: ${data.docId.substring(0, 8)}...
-                    </div>
-                `;
-            } else {
-                resultDiv.innerHTML = `
-                    <h3 class="error">❌ Error</h3>
-                    <p style="margin: 15px 0;">${data}</p>
-                    <button onclick="getLocation()" class="btn-secondary" style="margin-top: 10px;">
-                        <span>🔄</span> Intentar de nuevo
-                    </button>
-                `;
+            let firebaseStatus = '';
+            if (firebaseError) {
+                firebaseStatus = '<div style="margin-top: 10px; padding: 8px 12px; background: #fff3cd; border-radius: 6px; color: #856404; font-size: 14px;">⚠️ Ubicación obtenida localmente</div>';
+            } else if (docId) {
+                firebaseStatus = `<div style="margin-top: 10px; font-size: 12px; color: #718096; text-align: center;">ID: ${docId.substring(0, 8)}...</div>`;
             }
             
-            resultDiv.classList.add('show');
-            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            container.innerHTML = `
+                <div class="result-header">
+                    <div class="result-icon success-icon">✅</div>
+                    <div class="result-title">Ubicación Obtenida</div>
+                </div>
+                
+                <div class="data-grid">
+                    <div class="data-item">
+                        <div class="data-label">Latitud</div>
+                        <div class="data-value">${lat.toFixed(6)}</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Longitud</div>
+                        <div class="data-value">${lon.toFixed(6)}</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Precisión</div>
+                        <div class="data-value">±${Math.round(accuracy)} metros</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Hora</div>
+                        <div class="data-value">${new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="${googleMapsUrl}" target="_blank" class="btn-action maps">
+                        <span>🗺️</span> Google Maps
+                    </a>
+                    <a href="${appleMapsUrl}" target="_blank" class="btn-action maps">
+                        <span>🗺️</span> Apple Maps
+                    </a>
+                    <button onclick="copyCoordinates(${lat}, ${lon})" class="btn-action copy">
+                        <span>📋</span> Copiar Coordenadas
+                    </button>
+                </div>
+                
+                ${firebaseStatus}
+            `;
+            
+            container.classList.add('show');
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ========== MOSTRAR ERROR ==========
+        function showError(title, message) {
+            const container = document.getElementById('result-container');
+            
+            container.innerHTML = `
+                <div class="result-header">
+                    <div class="result-icon error-icon">❌</div>
+                    <div class="result-title">${title}</div>
+                </div>
+                
+                <div style="margin: 20px 0; color: #4a5568; line-height: 1.6;">
+                    ${message}
+                </div>
+                
+                <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;">
+                    <div style="font-weight: 600; margin-bottom: 8px; color: #495057;">Sugerencias:</div>
+                    <ul style="color: #6c757d; padding-left: 20px;">
+                        <li>Asegúrate de tener conexión a internet</li>
+                        <li>Activa los servicios de ubicación/GPS</li>
+                        <li>Permite el acceso a la ubicación en el navegador</li>
+                        <li>Recarga la página e intenta de nuevo</li>
+                    </ul>
+                </div>
+            `;
+            
+            container.classList.add('show');
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         // ========== COPIAR COORDENADAS ==========
         function copyCoordinates(lat, lon) {
             const text = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+            const button = event.target.closest('button');
             
             navigator.clipboard.writeText(text).then(() => {
-                const btn = event.target.closest('button');
-                const originalHtml = btn.innerHTML;
-                
-                btn.innerHTML = '<span>✅</span> Copiado!';
-                btn.style.background = '#38a169';
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<span>✅</span> ¡Copiado!';
+                button.style.background = '#28a745';
                 
                 setTimeout(() => {
-                    btn.innerHTML = originalHtml;
-                    btn.style.background = '';
+                    button.innerHTML = originalHtml;
+                    button.style.background = '';
                 }, 2000);
             }).catch(err => {
                 console.error('Error al copiar:', err);
+                button.innerHTML = '<span>❌</span> Error';
+                setTimeout(() => {
+                    button.innerHTML = '<span>📋</span> Copiar Coordenadas';
+                }, 2000);
             });
         }
 
         // ========== RESET BOTÓN ==========
-        function resetButton(btn, btnText, originalText) {
+        function resetButton(btn, btnText) {
             setTimeout(() => {
                 btn.disabled = false;
-                btnText.innerHTML = originalText;
-                isGettingLocation = false;
-            }, 1000);
-        }
-
-        // ========== DETECTAR DISPOSITIVO ==========
-        function detectDevice() {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            if (isMobile) {
-                document.body.classList.add('mobile');
-                // En móviles, mostrar instrucciones por defecto
-                document.getElementById('instructions').style.display = 'block';
-            }
+                btnText.innerHTML = '📍 Obtener Ubicación';
+                isProcessing = false;
+            }, 500);
         }
 
         // ========== INICIALIZAR ==========
         document.addEventListener('DOMContentLoaded', () => {
-            detectDevice();
-            
-            // Verificar si hay conexión a Firebase
-            if (!window.firebaseDB) {
-                setTimeout(() => {
-                    const status = document.getElementById('firebase-status');
-                    if (status && !status.innerHTML.includes('Conectado')) {
-                        status.innerHTML = '<div class="status-error">⚠️ No hay conexión con Firebase</div>';
-                    }
-                }, 1000);
-            }
+            // Verificar si Firebase se conectó
+            setTimeout(() => {
+                if (!window.firebaseDB) {
+                    console.log('Firebase no está disponible. La aplicación funcionará en modo local.');
+                }
+            }, 1000);
             
             // Feedback táctil mejorado
             const btn = document.getElementById('btn-location');
             btn.addEventListener('touchstart', () => {
-                btn.style.transform = 'scale(0.95)';
+                if (!btn.disabled) {
+                    btn.style.transform = 'scale(0.98)';
+                }
             });
             
             btn.addEventListener('touchend', () => {
                 btn.style.transform = '';
             });
-        });
-
-        // ========== MANEJAR OFFLINE ==========
-        window.addEventListener('online', () => {
-            const status = document.getElementById('firebase-status');
-            if (status) {
-                status.innerHTML = '<div class="status-success">✅ Conectado a Firebase</div>';
-            }
-        });
-
-        window.addEventListener('offline', () => {
-            const status = document.getElementById('firebase-status');
-            if (status) {
-                status.innerHTML = '<div class="status-error">⚠️ Sin conexión a internet</div>';
-            }
         });
     </script>
 </body>
