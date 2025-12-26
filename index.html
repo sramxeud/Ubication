@@ -1,27 +1,825 @@
-{
-  "latitud": 40.7128,
-  "longitud": -74.0060,
-  "precision": 25,
-  "googleMapsUrl": "https://www.google.com/maps?q=40.7128,-74.0060&z=15",
-  "fecha": "2024-01-15T10:30:00.000Z",
-  "timestamp": "January 15, 2024 at 10:30:00 AM UTC-5",
-  "deviceInfo": {
-    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)...",
-    "platform": "iPhone",
-    "language": "es-ES",
-    "operatingSystem": "iOS 14.0",
-    "browser": "Apple Safari",
-    "screenWidth": 375,
-    "screenHeight": 812,
-    "isMobile": true,
-    "ipInfo": {
-      "ip": "192.168.1.1",
-      "city": "Madrid",
-      "country": "Spain",
-      "timezone": "Europe/Madrid"
-    },
-    // ... más campos
-  },
-  "tipo": "geolocalizacion",
-  "fuente": "web_browser"
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwagbucksBO - Recompensas a lo Boliviano</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de colores Swagbucks */
+        :root {
+            --swag-green: #00b300;
+            --swag-blue: #0066cc;
+            --swag-orange: #ff9900;
+            --swag-light-blue: #4dc3ff;
+            --swag-dark: #333333;
+            --swag-light: #f8f9fa;
+            --swag-gray: #666666;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--swag-dark);
+            background-color: #f5f7fa;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--swag-green) 0%, var(--swag-blue) 100%);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            color: var(--swag-orange);
+            background-color: white;
+            padding: 0 5px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--swag-orange);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--swag-orange);
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .btn-primary {
+            background-color: var(--swag-orange);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #e68a00;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: white;
+            color: var(--swag-blue);
+        }
+        
+        .btn-green {
+            background-color: var(--swag-green);
+            color: white;
+        }
+        
+        .btn-green:hover {
+            background-color: #009900;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--swag-blue);
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--swag-gray);
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+        
+        .hero-highlight {
+            color: var(--swag-green);
+            font-weight: 700;
+        }
+        
+        /* Cómo funciona */
+        .how-it-works {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--swag-blue);
+            font-size: 2.2rem;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+        
+        .step:hover {
+            transform: translateY(-10px);
+        }
+        
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background-color: var(--swag-light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .step:nth-child(2) .step-icon {
+            background-color: var(--swag-orange);
+        }
+        
+        .step:nth-child(3) .step-icon {
+            background-color: var(--swag-green);
+        }
+        
+        .step h3 {
+            margin-bottom: 15px;
+            color: var(--swag-blue);
+        }
+        
+        /* Tareas disponibles */
+        .tasks {
+            padding: 80px 0;
+            background-color: var(--swag-light);
+        }
+        
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .task-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .task-header {
+            padding: 20px;
+            background: linear-gradient(to right, var(--swag-green), var(--swag-blue));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-points {
+            background-color: var(--swag-orange);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+        
+        .task-body {
+            padding: 20px;
+        }
+        
+        .task-body h4 {
+            margin-bottom: 10px;
+            color: var(--swag-blue);
+        }
+        
+        .task-body p {
+            color: var(--swag-gray);
+            margin-bottom: 20px;
+        }
+        
+        .task-footer {
+            padding: 0 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-time {
+            font-size: 0.9rem;
+            color: var(--swag-gray);
+        }
+        
+        /* Métodos de pago */
+        .payment-methods {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .payment-icons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-top: 40px;
+        }
+        
+        .payment-icon {
+            text-align: center;
+            max-width: 120px;
+        }
+        
+        .payment-icon i {
+            font-size: 3rem;
+            color: var(--swag-blue);
+            margin-bottom: 15px;
+        }
+        
+        .payment-icon.bnb i {
+            color: #8b0000; /* Color del BNB */
+        }
+        
+        .payment-icon.bcp i {
+            color: #013d7a; /* Color del BCP */
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--swag-dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .footer-column h4 {
+            color: var(--swag-orange);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #cccccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: var(--swag-orange);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            transition: background-color 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background-color: var(--swag-orange);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaaaaa;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step {
+                width: 80%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                order: 1;
+            }
+            
+            .logo {
+                order: 2;
+                flex: 1;
+                justify-content: center;
+            }
+            
+            nav {
+                order: 3;
+                width: 100%;
+                margin-top: 15px;
+                display: none;
+            }
+            
+            nav.active {
+                display: block;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .auth-buttons {
+                order: 2;
+                margin-left: 10px;
+            }
+            
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .step {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero {
+                padding: 50px 0;
+            }
+            
+            .how-it-works, .tasks, .payment-methods {
+                padding: 50px 0;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .auth-buttons {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="logo">
+                    <i class="fas fa-gem logo-icon"></i>
+                    <h1>Swagbucks<span>BO</span></h1>
+                </div>
+                
+                <nav id="mainNav">
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#como-funciona">Cómo Funciona</a></li>
+                        <li><a href="#tareas">Tareas</a></li>
+                        <li><a href="#recompensas">Recompensas</a></li>
+                        <li><a href="#nosotros">Nosotros</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="auth-buttons">
+                    <a href="#" class="btn btn-secondary">Iniciar Sesión</a>
+                    <a href="#" class="btn btn-primary">Regístrate Gratis</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <h2>Gana Dinero Real en Bolivia</h2>
+            <p>Completa tareas sencillas, responde encuestas, prueba productos y <span class="hero-highlight">gana puntos intercambiables por dinero real, recargas de saldo y tarjetas de regalo</span> de tus marcas favoritas en Bolivia.</p>
+            <a href="#" class="btn btn-primary btn-lg" style="padding: 15px 40px; font-size: 1.2rem;">
+                Comienza a Ganar ¡GRATIS! <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Cómo funciona -->
+    <section class="how-it-works" id="como-funciona">
+        <div class="container">
+            <h2 class="section-title">Cómo Funciona SwagbucksBO</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3>1. Regístrate Gratis</h3>
+                    <p>Crea tu cuenta en menos de 2 minutos. Solo necesitas tu correo electrónico y número de celular boliviano.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>2. Completa Tareas</h3>
+                    <p>Elige entre encuestas, ofertas promocionales, ver videos o probar nuevos productos locales.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3>3. Canjea tus Puntos</h3>
+                    <p>Convierte tus puntos en dinero real transferido a tu cuenta bancaria, recargas de saldo o tarjetas de regalo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tareas disponibles -->
+    <section class="tasks" id="tareas">
+        <div class="container">
+            <h2 class="section-title">Tareas Disponibles Hoy</h2>
+            <div class="task-grid">
+                <!-- Tarea 1 -->
+                <div class="task-card">
+                    <div class="task-header">
+                        <h4>Encuesta de Mercado</h4>
+                        <div class="task-points">150 pts</div>
+                    </div>
+                    <div class="task-body">
+                        <p>Participa en una encuesta sobre hábitos de consumo en supermercados bolivianos. Duración aproximada: 10 minutos.</p>
+                    </div>
+                    <div class="task-footer">
+                        <span class="task-time"><i class="far fa-clock"></i> 10 min</span>
+                        <a href="#" class="btn btn-green">Comenzar</a>
+                    </div>
+                </div>
+                
+                <!-- Tarea 2 -->
+                <div class="task-card">
+                    <div class="task-header">
+                        <h4>Prueba de Producto</h4>
+                        <div class="task-points">300 pts</div>
+                    </div>
+                    <div class="task-body">
+                        <p>Recibe un producto de limpieza local para probar en tu hogar y da tu opinión honesta. Solo para La Paz y Santa Cruz.</p>
+                    </div>
+                    <div class="task-footer">
+                        <span class="task-time"><i class="far fa-clock"></i> 15 min + prueba</span>
+                        <a href="#" class="btn btn-green">Comenzar</a>
+                    </div>
+                </div>
+                
+                <!-- Tarea 3 -->
+                <div class="task-card">
+                    <div class="task-header">
+                        <h4>Ver Videos</h4>
+                        <div class="task-points">2 pts/video</div>
+                    </div>
+                    <div class="task-body">
+                        <p>Mira videos cortos de marcas bolivianas y gana puntos automáticamente. Puedes ganar hasta 50 pts por día.</p>
+                    </div>
+                    <div class="task-footer">
+                        <span class="task-time"><i class="far fa-clock"></i> 1-3 min c/u</span>
+                        <a href="#" class="btn btn-green">Comenzar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Métodos de pago -->
+    <section class="payment-methods" id="recompensas">
+        <div class="container">
+            <h2 class="section-title">Canjea tus Puntos en Bolivia</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 30px; color: var(--swag-gray); font-size: 1.1rem;">
+                100 puntos = 1 Bs. (Boliviano). Retira tu dinero de forma fácil y rápida a través de los métodos más usados en Bolivia.
+            </p>
+            
+            <div class="payment-icons">
+                <div class="payment-icon">
+                    <i class="fas fa-university"></i>
+                    <p>Transferencia Bancaria</p>
+                </div>
+                
+                <div class="payment-icon bnb">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <p>Banco Nacional de Bolivia</p>
+                </div>
+                
+                <div class="payment-icon bcp">
+                    <i class="fas fa-credit-card"></i>
+                    <p>Banco BCP</p>
+                </div>
+                
+                <div class="payment-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                    <p>Recarga de Saldo</p>
+                </div>
+                
+                <div class="payment-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                    <p>Tarjetas de Regalo</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="#" class="btn btn-primary">Ver Todas las Recompensas</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="logo">
+                        <i class="fas fa-gem logo-icon"></i>
+                        <h3>Swagbucks<span>BO</span></h3>
+                    </div>
+                    <p style="margin-top: 15px; color: #cccccc;">La plataforma de recompensas #1 en Bolivia. Gana dinero real completando tareas sencillas desde tu casa o celular.</p>
+                    
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#como-funciona">Cómo Funciona</a></li>
+                        <li><a href="#tareas">Tareas Disponibles</a></li>
+                        <li><a href="#recompensas">Recompensas</a></li>
+                        <li><a href="#">Preguntas Frecuentes</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Política de Cookies</a></li>
+                        <li><a href="#">Contáctanos</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> soporte@swagbucksbo.com</li>
+                        <li><i class="fas fa-phone"></i> +591 777-12345</li>
+                        <li><i class="fas fa-map-marker-alt"></i> La Paz, Bolivia</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 SwagbucksBO - Plataforma de recompensas para Bolivia. Todos los derechos reservados.</p>
+                <p style="margin-top: 10px;">Este sitio no está afiliado a Swagbucks Inc. Es una versión adaptada para Bolivia.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Menú móvil
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+            
+            // Cambiar ícono
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+        
+        // Cerrar menú al hacer clic en un enlace (en móviles)
+        document.querySelectorAll('#mainNav a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    document.getElementById('mainNav').classList.remove('active');
+                    document.getElementById('mobileMenuBtn').querySelector('i').classList.remove('fa-times');
+                    document.getElementById('mobileMenuBtn').querySelector('i').classList.add('fa-bars');
+                }
+            });
+        });
+        
+        // Smooth scroll para enlaces internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Efecto de contador para puntos (simulado)
+        function animatePoints() {
+            const pointsElements = document.querySelectorAll('.task-points');
+            pointsElements.forEach(element => {
+                const originalText = element.textContent;
+                const points = parseInt(originalText);
+                
+                // Simular animación de conteo
+                let counter = 0;
+                const interval = setInterval(() => {
+                    if (counter >= points) {
+                        clearInterval(interval);
+                        element.textContent = originalText;
+                    } else {
+                        counter += Math.ceil(points / 20);
+                        element.textContent = counter + " pts";
+                    }
+                }, 50);
+            });
+        }
+        
+        // Ejecutar animación cuando las tareas son visibles
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.3
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animatePoints();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        const tasksSection = document.querySelector('.tasks');
+        if (tasksSection) {
+            observer.observe(tasksSection);
+        }
+    </script>
+</body>
+</html>
