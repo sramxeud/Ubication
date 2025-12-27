@@ -222,7 +222,7 @@
                     const lon = position.coords.longitude;
                     const accuracy = position.coords.accuracy;
                     
-                    btnText.innerHTML = '<span class="loader"></span> Guardando...';
+                    btnText.innerHTML = '<span class="loader"></span> Verificando...';
                     
                     const guardado = await guardarEnFirebase(lat, lon, accuracy);
                     
