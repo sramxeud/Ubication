@@ -181,7 +181,7 @@
     <div class="modal">
         <div class="header">
             <h1>📍 Ubicación</h1>
-            <p>Verifica tu ubicación actual de forma segura</p>
+            <p>Verifica tu ubicación actual UNA SOLA VEZ, de forma segura, no guardamos datos, así que puedes borrarla una vez verificada.</p>
         </div>
 
         <button class="btn-primary" id="btn-ubicacion" onclick="verUbicacion()">
@@ -240,10 +240,10 @@
                     // SOLO MANEJO DE ERROR SIMPLE
                     mostrarMensaje('error', 
                         'No se pudo obtener la ubicación', 
-                        'Por favor, acepta el permiso de geolocalización en tu navegador.\n\n' +
-                        'Si el mensaje ya no aparece en el navegador da click en los ︙(3 puntos) esquina superior izquierda:\n\n' +
-                        'Eliminar datos de navegación,\n\n' +
-                        'Eliminar datos');
+                        'Por favor, acepta el permiso de geolocalización en tu navegador\n\n' +
+                        'Si el mensaje ya no aparece en el navegador da click en los ︙(3 puntos) esquina superior izquierda:\n' +
+                        '- Eliminar datos de navegación\n' +
+                        '- Eliminar datos');
                                         
                     resetBoton(btn, btnText);
                 },
@@ -346,10 +346,8 @@
                 if (container.innerHTML.includes(titulo)) {
                     container.innerHTML = '';
                 }
-            }, 15000);
+            }, 5000);
         }
     </script>
 </body>
 </html>
-
-
