@@ -240,11 +240,11 @@
                     // SOLO MANEJO DE ERROR SIMPLE
                     mostrarMensaje('error', 
                         'No se pudo obtener la ubicación', 
-                        'Por favor, acepta el permiso de geolocalización en tu teléfono',
-                        'Si el mensaje ya no aparece en el navegador da click en los ︙(3 puntos), esquina superior izquierda:',
-                        '- Eliminar datos de navegación',
+                        'Por favor, acepta el permiso de geolocalización en tu navegador\n\n' +
+                        'Si el mensaje ya no aparece en el navegador da click en los ︙(3 puntos) esquina superior izquierda:\n' +
+                        '- Eliminar datos de navegación\n' +
                         '- Eliminar datos');
-                    
+                                        
                     resetBoton(btn, btnText);
                 },
                 opciones
@@ -351,4 +351,3 @@
     </script>
 </body>
 </html>
-
